@@ -65,7 +65,7 @@ public class Preferences {
         this.montoya = montoyaApi;
         this.gsonProvider = gsonProvider;
         this.logProvider = logProvider;
-        this.namespacePrefix = namespace + ".";
+        this.namespacePrefix = (namespace.isEmpty()) ? namespace : namespace + ".";
         this.preferenceDefaults = new HashMap<>();
         this.preferences = new HashMap<>();
         this.preferenceTypes = new HashMap<>();
@@ -282,8 +282,12 @@ public class Preferences {
 
     public <T> T get(String settingName){
         settingName = namespacePrefix + settingName;
-        assertThisManages(settingName);
-        Object value = this.preferences.get(settingName);
+        return getRaw(settingName);
+    }
+
+    private <T> T getRaw(String fullSettingName){
+        assertThisManages(fullSettingName);
+        Object value = this.preferences.get(fullSettingName);
 
         return (T) value;
     }
