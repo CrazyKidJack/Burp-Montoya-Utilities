@@ -20,7 +20,7 @@ extends PersistedContainer{
   ){
     this(
       api, name, vis,
-      new DefaultGsonProvider(), (ILogProvider)null
+      gsonProvider, (ILogProvider)null
     );
   }
 
@@ -40,7 +40,7 @@ extends PersistedContainer{
   ){
     this(
       api, name, vis,
-      new DefaultGsonProvider(), logProvider,
+      gsonProvider, logProvider,
       ""
     );
   }
@@ -59,7 +59,7 @@ extends PersistedContainer{
   ){
     this(
       api, name, vis,
-      new DefaultGsonProvider(), null,
+      gsonProvider, null,
       namespace
     );
   }

@@ -124,7 +124,10 @@ public class Preferences {
     }
 
     public void register(String settingName, Type type, Object defaultValue, Visibility visibility){
-        register(settingName, type, defaultValue, visibility, true);
+        if(visibility == Visibility.VOLATILE)
+            register(settingName, type, defaultValue, visibility, false);
+        else
+            register(settingName, type, defaultValue, visibility, true);
     }
 
     public void register(String settingName, Type type, Object defaultValue, Visibility visibility, Boolean persistDefault){
@@ -145,7 +148,7 @@ public class Preferences {
         if(previousValue != null){
             this.preferences.put(settingName, previousValue);
         }else{
-            if(persistDefault) reset(settingName);
+            if(persistDefault) resetRaw(settingName);
             else               this.preferences.put(settingName, cloneDefault(settingName));
         }
 
@@ -219,7 +222,7 @@ public class Preferences {
 
     private void setProjectSetting(String settingName, Object value) {
         Type type = this.preferenceTypes.get(settingName);
-        Object currentValue = this.preferences.get(settingName);
+        //Object currentValue = this.preferences.get(settingName);
         //String currentValueJson = gsonProvider.getGson().toJson(currentValue, type);
         String newValueJson = gsonProvider.getGson().toJson(value, type);
         //Temporarily removed. Not saving preferences for instance variables.
@@ -307,25 +310,33 @@ public class Preferences {
 
     public void set(String settingName, Object value, Object eventSource){
         settingName = namespacePrefix + settingName;
-        assertThisManages(settingName);
-        Visibility visibility = this.preferenceVisibilities.get(settingName);
+        setRaw(settingName, value, eventSource);
+    }
+
+    private void setRaw(String fullSettingName, Object value){
+        setRaw(fullSettingName, value, this);
+    }
+
+    private void setRaw(String fullSettingName, Object value, Object eventSource){
+        assertThisManages(fullSettingName);
+        Visibility visibility = this.preferenceVisibilities.get(fullSettingName);
         switch (visibility) {
-            case VOLATILE: {
-                this.preferences.put(settingName, value);
-                break;
-            }
-            case PROJECT: {
-                this.setProjectSetting(settingName, value);
-                break;
-            }
-            case GLOBAL: {
-                this.setGlobalSetting(settingName, value);
-                break;
-            }
+        case VOLATILE: {
+            this.preferences.put(fullSettingName, value);
+            break;
+        }
+        case PROJECT: {
+            this.setProjectSetting(fullSettingName, value);
+            break;
+        }
+        case GLOBAL: {
+            this.setGlobalSetting(fullSettingName, value);
+            break;
+        }
         }
 
         for (PreferenceListener preferenceListener : this.preferenceListeners) {
-            preferenceListener.onPreferenceSet(eventSource, settingName, value);
+            preferenceListener.onPreferenceSet(eventSource, fullSettingName, value);
         }
     }
 
@@ -376,7 +387,7 @@ public class Preferences {
         assertThisManages(fullSettingName);
 
         Object newInstance = cloneDefault(fullSettingName);
-        this.set(fullSettingName, newInstance);
+        this.setRaw(fullSettingName, newInstance);
 
         for (PreferenceListener preferenceListener : this.preferenceListeners) {
             preferenceListener.onPreferenceSet(this, fullSettingName, get(fullSettingName));
