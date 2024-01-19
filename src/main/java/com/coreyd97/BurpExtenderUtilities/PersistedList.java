@@ -11,47 +11,102 @@ import java.util.function.UnaryOperator;
 
 public class PersistedList<E> extends PersistedCollection<E, List<E>> implements List<E>{
   public PersistedList(
-    MontoyaApi api,
-    String name,
-    Preferences.Visibility vis
+    final MontoyaApi api, final String name, final Preferences.Visibility vis
   ){
-    super(api, name, new TypeToken<List<E>>(){}, vis);
+    super(api, name, vis, new TypeToken<List<E>>(){});
   }
 
   public PersistedList(
-    MontoyaApi api,
-    String name,
-    TypeToken<? extends List<E>> listType,
-    Preferences.Visibility vis
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final TypeToken<? extends List<E>> listType
   ){
-    super(api, name, listType, vis);
+    super(api, name, vis, listType);
   }
 
   public PersistedList(
-    MontoyaApi api,
-    String name,
-    List<E> defaultList,
-    Preferences.Visibility vis
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final List<E> defaultList
   ){
-    super(api, name, new TypeToken<List<E>>(){}, defaultList, vis);
+    super(api, name, vis, new TypeToken<List<E>>(){}, defaultList);
   }
 
   public PersistedList(
-    MontoyaApi api,
-    String name,
-    TypeToken<? extends List<E>> listType, List<E> defaultList,
-    Preferences.Visibility vis
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final TypeToken<? extends List<E>> listType, final List<E> defaultList
   ){
-    super(api, name, listType, defaultList, vis);
+    super(api, name, vis, listType, defaultList);
   }
 
   public PersistedList(
-    MontoyaApi api, IGsonProvider gsonProvider,
-    String name,
-    TypeToken<? extends List<E>> listType, List<E> defaultList,
-    Preferences.Visibility vis
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final IGsonProvider gsonProvider,
+    final TypeToken<? extends List<E>> listType, final List<E> defaultList
   ){
-    super(api, gsonProvider, name, listType, defaultList, vis);
+    super(api, name, vis, gsonProvider, listType, defaultList);
+  }
+
+  public PersistedList(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final String namespace
+  ){
+    super(api, name, vis, new TypeToken<List<E>>(){}, namespace);
+  }
+
+  public PersistedList(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final TypeToken<? extends List<E>> listType,
+    final String namespace
+  ){
+    super(api, name, vis, listType, null, namespace);
+  }
+
+  public PersistedList(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final List<E> defaultList,
+    final String namespace
+  ){
+    super(api, name, vis, new TypeToken<List<E>>(){}, defaultList, namespace);
+  }
+
+  public PersistedList(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final TypeToken<? extends List<E>> listType, final List<E> defaultList,
+    final String namespace
+  ){
+    super(
+      api, name, vis,
+      new DefaultGsonProvider(),
+      listType, defaultList,
+      namespace
+    );
+  }
+
+  public PersistedList(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final IGsonProvider gsonProvider,
+    final TypeToken<? extends List<E>> listType, final List<E> defaultList,
+    final String namespace
+  ){
+    super(
+      api, name, vis,
+      new DefaultGsonProvider(), null,
+      listType, defaultList,
+      namespace
+    );
+  }
+
+  public PersistedList(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final IGsonProvider gsonProvider, final ILogProvider logProvider,
+    final TypeToken<? extends List<E>> listType, final List<E> defaultList,
+    final String namespace
+  ){
+    super(
+      api, name, vis,
+      gsonProvider, logProvider,
+      listType, defaultList,
+      namespace
+    );
   }
 
   //////////////

@@ -9,19 +9,79 @@ import java.lang.reflect.Type;
 public abstract class PersistedObject
 extends PersistedContainer{
   public PersistedObject(
-    MontoyaApi api,
-    String name,
-    Preferences.Visibility vis
+    final MontoyaApi api, final String name, final Preferences.Visibility vis
   ){
-    this(api, new DefaultGsonProvider(), name, vis);
+    this(api, name, vis, new DefaultGsonProvider());
   }
 
   public PersistedObject(
-    MontoyaApi api, IGsonProvider gsonProvider,
-    String name,
-    Preferences.Visibility vis
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final IGsonProvider gsonProvider
   ){
-    super(api, gsonProvider, name);
+    this(
+      api, name, vis,
+      new DefaultGsonProvider(), (ILogProvider)null
+    );
+  }
+
+  public PersistedObject(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final ILogProvider logProvider
+  ){
+    this(
+      api, name, vis,
+      new DefaultGsonProvider(), logProvider
+    );
+  }
+
+  public PersistedObject(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final IGsonProvider gsonProvider, final ILogProvider logProvider
+  ){
+    this(
+      api, name, vis,
+      new DefaultGsonProvider(), logProvider,
+      ""
+    );
+  }
+
+  public PersistedObject(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final String namespace
+  ){
+    this(api, name, vis, new DefaultGsonProvider(), namespace);
+  }
+
+  public PersistedObject(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final IGsonProvider gsonProvider,
+    final String namespace
+  ){
+    this(
+      api, name, vis,
+      new DefaultGsonProvider(), null,
+      namespace
+    );
+  }
+
+  public PersistedObject(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final ILogProvider logProvider,
+    final String namespace
+  ){
+    this(
+      api, name, vis,
+      new DefaultGsonProvider(), logProvider,
+      namespace
+    );
+  }
+
+  public PersistedObject(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final IGsonProvider gsonProvider, final ILogProvider logProvider,
+    final String namespace
+  ){
+    super(api, name, gsonProvider, logProvider, namespace);
     _vis = vis;
   }
 

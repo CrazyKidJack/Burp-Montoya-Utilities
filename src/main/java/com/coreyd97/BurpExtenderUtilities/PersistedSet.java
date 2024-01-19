@@ -7,46 +7,101 @@ import java.util.Set;
 
 public class PersistedSet<E> extends PersistedCollection<E, Set<E>> implements Set<E>{
   public PersistedSet(
-    MontoyaApi api,
-    String name,
-    Preferences.Visibility vis
+    final MontoyaApi api, final String name, final Preferences.Visibility vis
   ){
-    super(api, name, new TypeToken<Set<E>>(){}, vis);
+    super(api, name, vis, new TypeToken<Set<E>>(){});
   }
 
   public PersistedSet(
-    MontoyaApi api,
-    String name,
-    TypeToken<? extends Set<E>> setType,
-    Preferences.Visibility vis
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final TypeToken<? extends Set<E>> setType
   ){
-    super(api, name, setType, vis);
+    super(api, name, vis, setType);
   }
 
   public PersistedSet(
-    MontoyaApi api,
-    String name,
-    Set<E> defaultSet,
-    Preferences.Visibility vis
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final Set<E> defaultSet
   ){
-    super(api, name, new TypeToken<Set<E>>(){}, defaultSet, vis);
+    super(api, name, vis, new TypeToken<Set<E>>(){}, defaultSet);
   }
 
   public PersistedSet(
-    MontoyaApi api,
-    String name,
-    TypeToken<? extends Set<E>> setType, Set<E> defaultSet,
-    Preferences.Visibility vis
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final TypeToken<? extends Set<E>> setType, final Set<E> defaultSet
   ){
-    super(api, name, setType, defaultSet, vis);
+    super(api, name, vis, setType, defaultSet);
   }
 
   public PersistedSet(
-    MontoyaApi api, IGsonProvider gsonProvider,
-    String name,
-    TypeToken<? extends Set<E>> setType, Set<E> defaultSet,
-    Preferences.Visibility vis
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final IGsonProvider gsonProvider,
+    final TypeToken<? extends Set<E>> setType, final Set<E> defaultSet
   ){
-    super(api, gsonProvider, name, setType, defaultSet, vis);
+    super(api, name, vis, gsonProvider, setType, defaultSet);
+  }
+
+  public PersistedSet(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final String namespace
+  ){
+    super(api, name, vis, new TypeToken<Set<E>>(){}, namespace);
+  }
+
+  public PersistedSet(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final TypeToken<? extends Set<E>> setType,
+    final String namespace
+  ){
+    super(api, name, vis, setType, null, namespace);
+  }
+
+  public PersistedSet(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final Set<E> defaultSet,
+    final String namespace
+  ){
+    super(api, name, vis, new TypeToken<Set<E>>(){}, defaultSet, namespace);
+  }
+
+  public PersistedSet(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final TypeToken<? extends Set<E>> setType, final Set<E> defaultSet,
+    final String namespace
+  ){
+    super(
+      api, name, vis,
+      new DefaultGsonProvider(),
+      setType, defaultSet,
+      namespace
+    );
+  }
+
+  public PersistedSet(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final IGsonProvider gsonProvider,
+    final TypeToken<? extends Set<E>> setType, final Set<E> defaultSet,
+    final String namespace
+  ){
+    super(
+      api, name, vis,
+      new DefaultGsonProvider(), null,
+      setType, defaultSet,
+      namespace
+    );
+  }
+
+  public PersistedSet(
+    final MontoyaApi api, final String name, final Preferences.Visibility vis,
+    final IGsonProvider gsonProvider, final ILogProvider logProvider,
+    final TypeToken<? extends Set<E>> setType, final Set<E> defaultSet,
+    final String namespace
+  ){
+    super(
+      api, name, vis,
+      gsonProvider, logProvider,
+      setType, defaultSet,
+      namespace
+    );
   }
 }

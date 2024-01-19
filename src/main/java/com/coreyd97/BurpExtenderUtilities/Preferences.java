@@ -22,6 +22,9 @@ public class Preferences {
     private ILogProvider logProvider;
 
     @Getter
+    private final String namespacePrefix;
+
+    @Getter
     private final IGsonProvider gsonProvider;
     private final MontoyaApi montoya;
     private final HashMap<String, Object> preferences;
@@ -30,14 +33,39 @@ public class Preferences {
     private final HashMap<String, Visibility> preferenceVisibilities;
     private final ArrayList<PreferenceListener> preferenceListeners;
 
-    public Preferences(final MontoyaApi montoyaApi, final IGsonProvider gsonProvider, final ILogProvider logProvider){
-        this(montoyaApi, gsonProvider);
-        this.logProvider = logProvider;
+    public Preferences(final MontoyaApi montoyaApi){
+        this(montoyaApi, new DefaultGsonProvider());
     }
 
     public Preferences(final MontoyaApi montoyaApi, final IGsonProvider gsonProvider){
+        this(montoyaApi, gsonProvider, (ILogProvider)null);
+    }
+
+    public Preferences(final MontoyaApi montoyaApi, final ILogProvider logProvider){
+        this(montoyaApi, new DefaultGsonProvider(), logProvider);
+    }
+
+    public Preferences(final MontoyaApi montoyaApi, final IGsonProvider gsonProvider, final ILogProvider logProvider){
+        this(montoyaApi, gsonProvider, logProvider, "");
+    }
+
+    public Preferences(final MontoyaApi montoyaApi, final String namespace){
+        this(montoyaApi, new DefaultGsonProvider(), namespace);
+    }
+
+    public Preferences(final MontoyaApi montoyaApi, final IGsonProvider gsonProvider, final String namespace){
+        this(montoyaApi, gsonProvider, null, namespace);
+    }
+
+    public Preferences(final MontoyaApi montoyaApi, final ILogProvider logProvider, final String namespace){
+        this(montoyaApi, new DefaultGsonProvider(), logProvider, namespace);
+    }
+
+    public Preferences(final MontoyaApi montoyaApi, final IGsonProvider gsonProvider, final ILogProvider logProvider, final String namespace){
         this.montoya = montoyaApi;
         this.gsonProvider = gsonProvider;
+        this.logProvider = logProvider;
+        this.namespacePrefix = namespace + ".";
         this.preferenceDefaults = new HashMap<>();
         this.preferences = new HashMap<>();
         this.preferenceTypes = new HashMap<>();
@@ -100,6 +128,7 @@ public class Preferences {
     }
 
     public void register(String settingName, Type type, Object defaultValue, Visibility visibility, Boolean persistDefault){
+        settingName = namespacePrefix + settingName;
         NameManager.reserve(settingName);
 
         this.preferenceVisibilities.put(settingName, visibility);
@@ -142,6 +171,7 @@ public class Preferences {
     }
 
     public void unpersist(String settingName) {
+        settingName = namespacePrefix + settingName;
         assertThisManages(settingName);
 
         Visibility visibility = this.preferenceVisibilities.get(settingName);
@@ -155,6 +185,7 @@ public class Preferences {
     }
 
     public void repersist(String settingName){
+        settingName = namespacePrefix + settingName;
         assertThisManages(settingName);
 
         Object previousValue = this.preferences.get(settingName);
@@ -165,6 +196,7 @@ public class Preferences {
     }
 
     public void setDefault(String settingName, Object newDefaultValue){
+        settingName = namespacePrefix + settingName;
         assertThisManages(settingName);
         this.preferenceDefaults.put(settingName, newDefaultValue);
     }
@@ -242,6 +274,7 @@ public class Preferences {
     }
 
     public <T> T get(String settingName){
+        settingName = namespacePrefix + settingName;
         assertThisManages(settingName);
         Object value = this.preferences.get(settingName);
 
@@ -269,6 +302,7 @@ public class Preferences {
     }
 
     public void set(String settingName, Object value, Object eventSource){
+        settingName = namespacePrefix + settingName;
         assertThisManages(settingName);
         Visibility visibility = this.preferenceVisibilities.get(settingName);
         switch (visibility) {
@@ -300,6 +334,7 @@ public class Preferences {
     }
 
     public Type getType(String settingName) {
+        settingName = namespacePrefix + settingName;
         assertThisManages(settingName);
         return this.preferenceTypes.get(settingName);
     }
@@ -329,13 +364,18 @@ public class Preferences {
     }
 
     public void reset(String settingName){
-        assertThisManages(settingName);
+        settingName = namespacePrefix + settingName;
+        resetRaw(settingName);
+    }
 
-        Object newInstance = cloneDefault(settingName);
-        this.set(settingName, newInstance);
+    private void resetRaw(String fullSettingName){
+        assertThisManages(fullSettingName);
+
+        Object newInstance = cloneDefault(fullSettingName);
+        this.set(fullSettingName, newInstance);
 
         for (PreferenceListener preferenceListener : this.preferenceListeners) {
-            preferenceListener.onPreferenceSet(this, settingName, get(settingName));
+            preferenceListener.onPreferenceSet(this, fullSettingName, get(fullSettingName));
         }
     }
 
@@ -363,7 +403,9 @@ public class Preferences {
 
     public void resetAll(){
         HashMap<String, Preferences.Visibility> registeredSettings = getRegisteredSettings();
-        reset(registeredSettings.keySet());
+        for(String key : registeredSettings.keySet()){
+            resetRaw(key);
+        }
     }
 
     void logOutput(String message){
